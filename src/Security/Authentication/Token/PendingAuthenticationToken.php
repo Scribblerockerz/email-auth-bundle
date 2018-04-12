@@ -31,6 +31,16 @@ class PendingAuthenticationToken extends AbstractToken implements TokenInterface
     }
 
     /**
+     * Never return real roles for this token!
+     *
+     * @return array|\Symfony\Component\Security\Core\Role\Role[]
+     */
+    public function getRoles()
+    {
+        return [];
+    }
+
+    /**
      * Returns the provider key.
      *
      * @return string The provider key

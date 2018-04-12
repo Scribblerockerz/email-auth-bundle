@@ -21,7 +21,9 @@
             "Tests\\Rockz\\EmailAuthBundle\\": "tests/"
         }
     },
-    "require": {},
+    "require": {
+        "symfony/security": "^4.1@dev"
+    },
     "minimum-stability": "dev",
     "require-dev": {
         "symfony/phpunit-bridge": "^4.1@dev"

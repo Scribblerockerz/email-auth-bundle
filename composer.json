@@ -16,6 +16,11 @@
             "/tests/"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Rockz\\EmailAuthBundle\\": "tests/"
+        }
+    },
     "require": {},
     "minimum-stability": "dev",
     "require-dev": {

@@ -1,0 +1,21 @@
+{
+    "name": "rockz/email-auth-bundle",
+    "description": "Authenticate the user by sending an authorization request to his email.",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Johannes Schröder",
+            "email": "contact@scribblerockerz.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Rockz\\EmailAuthBundle\\": "src/"
+        },
+        "exclude-from-classmap": [
+            "/tests/"
+        ]
+    },
+    "require": {},
+    "minimum-stability": "dev"
+}

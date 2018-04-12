@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <!-- services -->
+        <service id="rockz_email_auth.security_http_entry_point.email_authentication_entry_point" class="Rockz\EmailAuthBundle\Security\Http\EntryPoint\EmailAuthenticationEntryPoint" public="false">
+            <argument type="service" id="security.http_utils"/>
+        </service>
+
+        <service id="rockz_email_auth.security_firewall.email_authentication_listener" class="Rockz\EmailAuthBundle\Security\Firewall\EmailAuthenticationListener" public="false">
+            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="security.authentication.manager"/>
+            <argument/>
+            <argument key="$preAuthenticationSuccessHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_success_handler"/>
+            <argument key="$preAuthenticationFailureHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler"/>
+            <argument key="$authenticationSuccessHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_success_handler"/>
+            <argument key="$authenticationFailureHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler"/>
+        </service>
+
+        <service id="rockz_email_auth.security_authentication_provider.email_authentication_provider" class="Rockz\EmailAuthBundle\Security\Authentication\Provider\EmailAuthenticationProvider" public="false">
+            <argument key="$userProvider"/>
+            <argument key="$providerKey"/>
+            <argument key="$remoteAuthorizer" type="service" id="rockz_email_auth.remote_authorization.remote_authorizer"/>
+        </service>
+
+        <service id="rockz_email_auth.security_http_authentication.email_authentication_success_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationSuccessHandler">
+            <argument type="service" id="security.http_utils"/>
+        </service>
+        <service id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationFailureHandler">
+            <argument type="service" id="security.http_utils"/>
+        </service>
+
+        <service id="rockz_email_auth.repository.auth_session_repository" class="Rockz\EmailAuthBundle\Repository\AuthSessionRepository">
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="rockz_email_auth.mailer.twig_swift_mailer" class="Rockz\EmailAuthBundle\Mailer\TwigSwiftMailer">
+            <argument type="service" id="mailer"/>
+            <argument type="service" id="router.default"/>
+            <argument type="service" id="twig"/>
+        </service>
+
+        <service id="rockz_email_auth.remote_authorization.remote_authorizer" class="Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer">
+            <argument type="service" id="rockz_email_auth.repository.auth_session_repository"/>
+            <argument type="service" id="rockz_email_auth.mailer.twig_swift_mailer"/>
+        </service>
+
+
+
+        <!-- TODO: figure out which services can be auto-wired and be used standalone -->
+
+        <!-- aliases -->
+        <service id="Rockz\EmailAuthBundle\Repository\AuthSessionRepository" alias="rockz_email_auth.repository.auth_session_repository" public="true"/>
+        <service id="Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer" alias="rockz_email_auth.remote_authorization.remote_authorizer" public="true"/>
+
+        <!--<service id="Rockz\EmailAuthBundle\Security\Http\EntryPoint\EmailAuthenticationEntryPoint" alias="rockz_email_auth.security_http_entry_point.email_authentication_entry_point"/>-->
+        <!--<service id="Rockz\EmailAuthBundle\Security\Firewall\EmailAuthenticationListener" alias="rockz_email_auth.security_firewall.email_authentication_listener"/>-->
+
+    </services>
+</container>

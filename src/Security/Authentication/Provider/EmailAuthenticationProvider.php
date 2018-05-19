@@ -3,6 +3,7 @@
 namespace Rockz\EmailAuthBundle\Security\Authentication\Provider;
 
 use Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer;
+use Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizerInterface;
 use Rockz\EmailAuthBundle\Security\Authentication\Provider\Exception\SkipAuthenticationException;
 use Rockz\EmailAuthBundle\Security\Authentication\Token\EmailAuthenticationToken;
 use Rockz\EmailAuthBundle\Security\Authentication\Token\PendingAuthenticationToken;
@@ -19,7 +20,7 @@ class EmailAuthenticationProvider implements AuthenticationProviderInterface
     private $providerKey;
     private $remoteAuthorizer;
 
-    public function __construct(UserProviderInterface $userProvider, string $providerKey, RemoteAuthorizer $remoteAuthorizer)
+    public function __construct(UserProviderInterface $userProvider, string $providerKey, RemoteAuthorizerInterface $remoteAuthorizer)
     {
         $this->userProvider = $userProvider;
         $this->providerKey = $providerKey;
@@ -56,6 +57,7 @@ class EmailAuthenticationProvider implements AuthenticationProviderInterface
             return new PendingAuthenticationToken($user, $clientHash, $this->providerKey, []);
         }
 
+        // Step 2.
         if ($token instanceof PendingAuthenticationToken) {
 
             $clientHash = $token->getCredentials();

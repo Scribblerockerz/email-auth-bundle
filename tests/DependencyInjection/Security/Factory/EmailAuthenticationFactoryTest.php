@@ -4,6 +4,7 @@ namespace Tests\Rockz\EmailAuthBundle\DependencyInjection\Security\Factory;
 
 use PHPUnit\Framework\TestCase;
 use Rockz\EmailAuthBundle\DependencyInjection\Security\Factory\EmailAuthenticationFactory;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -189,6 +190,67 @@ class EmailAuthenticationFactoryTest extends TestCase
                 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler.foo'
             ),
         );
+    }
+
+    public function testGetPosition()
+    {
+        $factory = new EmailAuthenticationFactory();
+        $this->assertSame('pre_auth', $factory->getPosition());
+    }
+
+    public function testGetKey()
+    {
+        $factory = new EmailAuthenticationFactory();
+        $this->assertSame('rockz_email_auth', $factory->getKey());
+    }
+
+    /**
+     * @dataProvider getValidConfigurationTests
+     */
+    public function testConfigurationOptions($inputConfig, $expectedConfig)
+    {
+        $factory = new EmailAuthenticationFactory();
+
+        $nodeDefinition = new ArrayNodeDefinition('rockz_email_auth');
+        $factory->addConfiguration($nodeDefinition);
+
+        $node = $nodeDefinition->getNode();
+        $normalizedConfig = $node->normalize($inputConfig);
+        $finalizedConfig = $node->finalize($normalizedConfig);
+
+        $this->assertEquals($expectedConfig, $finalizedConfig);
+    }
+
+    public function getValidConfigurationTests()
+    {
+        $tests = array();
+
+        // completely basic
+        $tests[] = array(
+            array(),
+            array(
+                'remember_me' => true,
+            ),
+        );
+
+        // custom handler
+        $tests[] = array(
+            array(
+                'pre_auth_success_handler' => 'foo',
+                'pre_auth_failure_handler' => 'bar',
+                'success_handler' => 'baz',
+                'failure_handler' => 'toot',
+            ),
+            array(
+                'remember_me' => true,
+                'pre_auth_success_handler' => 'foo',
+                'pre_auth_failure_handler' => 'bar',
+                'success_handler' => 'baz',
+                'failure_handler' => 'toot',
+            ),
+        );
+
+        return $tests;
     }
 
     protected function callFactory($id, $config, $userProviderId, $defaultEntryPointId)

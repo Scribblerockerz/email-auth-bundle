@@ -75,14 +75,97 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
     protected function createAuthenticationListener(ContainerBuilder $container, string $firewallName, array $config)
     {
         $listenerId = 'security.authentication.rockz_email_auth_listener.'.$firewallName;
-        $container
-            ->setDefinition(
-                $listenerId,
-                new ChildDefinition('rockz_email_auth.security_firewall.email_authentication_listener')
-            )
-            ->setArgument('$providerKey', $firewallName);
 
+        $listener = new ChildDefinition('rockz_email_auth.security_firewall.email_authentication_listener');
+        $listener->setArgument('$providerKey', $firewallName);
+        $listener->replaceArgument('$preAuthenticationSuccessHandler', new Reference($this->createPreAuthenticationSuccessHandler($container, $firewallName, $config)));
+        $listener->replaceArgument('$preAuthenticationFailureHandler', new Reference($this->createPreAuthenticationFailureHandler($container, $firewallName, $config)));
+        $listener->replaceArgument('$authenticationSuccessHandler', new Reference($this->createSuccessHandler($container, $firewallName, $config)));
+        $listener->replaceArgument('$authenticationFailureHandler', new Reference($this->createFailureHandler($container, $firewallName, $config)));
+
+
+        $container->setDefinition($listenerId, $listener);
         return $listenerId;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string $firewallName
+     * @param array $config
+     * @return string
+     */
+    protected function createPreAuthenticationSuccessHandler(ContainerBuilder $container, string $firewallName, array $config)
+    {
+        $defaultSuccessHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_success_handler';
+        $successHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_pre_auth_success_handler'.'.'.$firewallName;
+
+        if (isset($config['pre_auth_success_handler'])) {
+            $container->setDefinition($successHandlerId, new ChildDefinition($config['pre_auth_success_handler']));
+        } else {
+            $container->setDefinition($successHandlerId, new ChildDefinition($defaultSuccessHandlerId));
+        }
+
+        return $successHandlerId;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string $firewallName
+     * @param array $config
+     * @return string
+     */
+    protected function createPreAuthenticationFailureHandler(ContainerBuilder $container, string $firewallName, array $config)
+    {
+        $defaultFailureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler';
+        $failureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_pre_auth_failure_handler'.'.'.$firewallName;
+
+        if (isset($config['pre_auth_failure_handler'])) {
+            $container->setDefinition($failureHandlerId, new ChildDefinition($config['pre_auth_failure_handler']));
+        } else {
+            $container->setDefinition($failureHandlerId, new ChildDefinition($defaultFailureHandlerId));
+        }
+
+        return $failureHandlerId;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string $firewallName
+     * @param array $config
+     * @return string
+     */
+    protected function createSuccessHandler(ContainerBuilder $container, string $firewallName, array $config)
+    {
+        $defaultSuccessHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_success_handler';
+        $successHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_success_handler'.'.'.$firewallName;
+
+        if (isset($config['success_handler'])) {
+            $container->setDefinition($successHandlerId, new ChildDefinition($config['success_handler']));
+        } else {
+            $container->setDefinition($successHandlerId, new ChildDefinition($defaultSuccessHandlerId));
+        }
+
+        return $successHandlerId;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string $firewallName
+     * @param array $config
+     * @return string
+     */
+    protected function createFailureHandler(ContainerBuilder $container, string $firewallName, array $config)
+    {
+        $defaultFailureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler';
+        $failureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler'.'.'.$firewallName;
+
+        if (isset($config['failure_handler'])) {
+            $container->setDefinition($failureHandlerId, new ChildDefinition($config['failure_handler']));
+        } else {
+            $container->setDefinition($failureHandlerId, new ChildDefinition($defaultFailureHandlerId));
+        }
+
+        return $failureHandlerId;
     }
 
     /**
@@ -113,7 +196,7 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
      */
     protected function isRememberMeAware(array $config)
     {
-        return true;//;$config['remember_me'];
+        return $config['remember_me'];
     }
 
     /**
@@ -143,6 +226,14 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
      */
     public function addConfiguration(NodeDefinition $builder)
     {
-        // TODO: Implement addConfiguration() method.
+        $builder
+            ->children()
+//                ->scalarNode('provider')->end()
+                ->booleanNode('remember_me')->defaultTrue()->end()
+                ->scalarNode('pre_auth_success_handler')->end()
+                ->scalarNode('success_handler')->end()
+                ->scalarNode('pre_auth_failure_handler')->end()
+                ->scalarNode('failure_handler')->end()
+            ->end();
     }
 }

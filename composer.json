@@ -22,7 +22,10 @@
         }
     },
     "require": {
-        "symfony/security": "^4.1@dev"
+        "symfony/security": "^4.1@dev",
+        "doctrine/orm": "2.7.x-dev",
+        "doctrine/doctrine-bundle": "^1.8@dev",
+        "symfony/security-bundle": "^4.1@dev"
     },
     "minimum-stability": "dev",
     "require-dev": {

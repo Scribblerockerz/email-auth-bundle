@@ -35,6 +35,12 @@ class PendingAuthenticationTokenTest extends TestCase
         new PendingAuthenticationToken('', '', '', []);
     }
 
+    public function testGetProviderKey()
+    {
+        $token = new PendingAuthenticationToken('foo', 'bar', 'baz', []);
+        $this->assertSame('baz', $token->getProviderKey());
+    }
+
     public function testGetUserData()
     {
         $token = new PendingAuthenticationToken('foo', 'bar', 'baz', []);
@@ -46,5 +52,34 @@ class PendingAuthenticationTokenTest extends TestCase
     {
         $token = new PendingAuthenticationToken('foo', 'bar', 'baz', []);
         $this->assertSame('bar', $token->getCredentials());
+    }
+
+    public function testSerializeToken()
+    {
+        $token = new PendingAuthenticationToken('foo', 'bar', 'baz', ['A']);
+
+        $unserializedData = unserialize($token->serialize());
+
+        // first offset must be the credentials
+        $this->assertEquals('bar', $unserializedData[0]);
+
+        // second offset must be the providerKey
+        $this->assertEquals('baz', $unserializedData[1]);
+
+        // Note: other offsets are handled by AbstractToken
+    }
+
+    public function testUnserializeToken()
+    {
+        $token = new PendingAuthenticationToken('foo', 'bar', 'baz', ['A']);
+
+        $serializedData = $token->serialize();
+
+        $loadedToken = new PendingAuthenticationToken('a','b', 'c', []);
+        $loadedToken->unserialize($serializedData);
+
+        $this->assertEquals('bar', $loadedToken->getCredentials());
+        $this->assertEquals('baz', $loadedToken->getProviderKey());
+        $this->assertEquals('foo', $loadedToken->getUser());
     }
 }

@@ -41,4 +41,46 @@ class EmailAuthenticationTokenTest extends TestCase
         $token = new EmailAuthenticationToken('foo', 'bar', 'baz', []);
         $this->assertEmpty($token->getRoles());
     }
+
+
+    public function testGetProviderKey()
+    {
+        $token = new EmailAuthenticationToken('foo', 'bar', 'baz', []);
+        $this->assertSame('baz', $token->getProviderKey());
+    }
+
+    public function testGetCredentials()
+    {
+        $token = new EmailAuthenticationToken('foo', 'bar', 'baz', []);
+        $this->assertSame('bar', $token->getCredentials());
+    }
+
+    public function testSerializeToken()
+    {
+        $token = new EmailAuthenticationToken('foo', 'bar', 'baz', ['A']);
+
+        $unserializedData = unserialize($token->serialize());
+
+        // first offset must be the credentials
+        $this->assertEquals('bar', $unserializedData[0]);
+
+        // second offset must be the providerKey
+        $this->assertEquals('baz', $unserializedData[1]);
+
+        // Note: other offsets are handled by AbstractToken
+    }
+
+    public function testUnserializeToken()
+    {
+        $token = new EmailAuthenticationToken('foo', 'bar', 'baz', ['A']);
+
+        $serializedData = $token->serialize();
+
+        $loadedToken = new EmailAuthenticationToken('a','b', 'c', []);
+        $loadedToken->unserialize($serializedData);
+
+        $this->assertEquals('bar', $loadedToken->getCredentials());
+        $this->assertEquals('baz', $loadedToken->getProviderKey());
+        $this->assertEquals('foo', $loadedToken->getUser());
+    }
 }

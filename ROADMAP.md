@@ -12,6 +12,8 @@ This is more of a todo for this project.
 
 
 - write a setup guide
+    - firewall configuration:
+        rockz_email_auth: ~
     - routing
         ```yaml
         _rockz_email_auth:

@@ -9,6 +9,10 @@
             <argument type="service" id="security.http_utils"/>
         </service>
 
+        <service id="rockz_email_auth.controller.authorization_controller" class="Rockz\EmailAuthBundle\Controller\AuthorizationController" public="true">
+            <argument type="service" id="rockz_email_auth.remote_authorization.remote_authorizer"/>
+        </service>
+
         <service id="rockz_email_auth.security_firewall.email_authentication_listener" class="Rockz\EmailAuthBundle\Security\Firewall\EmailAuthenticationListener" public="false">
             <argument type="service" id="security.token_storage"/>
             <argument type="service" id="security.authentication.manager"/>

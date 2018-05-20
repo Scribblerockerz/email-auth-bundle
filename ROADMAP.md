@@ -9,3 +9,11 @@ This is more of a todo for this project.
 - Entities Best Practise.. maybe define them with xml or yaml?
 - Allow configuration
 - Change Name back to EmailAuthBundle an remove the previous one...
+
+
+- write a setup guide
+    - routing
+        ```yaml
+        _rockz_email_auth:
+          resource: "@RockzEmailAuthBundle/Resources/config/routes.xml"
+        ```

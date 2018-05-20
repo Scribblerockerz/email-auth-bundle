@@ -44,7 +44,7 @@ class TwigSwiftMailerTest extends TestCase
             ->method('generate')
             ->willReturnCallback(function($routeName) use ($that) {
                 $that->assertSame(
-                    'authorize_email_login',
+                    'rockz_email_auth_authorization_authorize',
                     $routeName,
                     'Should generate a route to accept the authorization'
                 );
@@ -55,7 +55,7 @@ class TwigSwiftMailerTest extends TestCase
             ->method('generate')
             ->willReturnCallback(function($routeName) use ($that) {
                 $that->assertSame(
-                    'refuse_email_login',
+                    'rockz_email_auth_authorization_refuse',
                     $routeName,
                     'Should generate a route to refuse the authorization'
                 );

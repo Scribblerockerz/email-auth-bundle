@@ -96,6 +96,7 @@ class TwigSwiftMailer implements MailerInterface
      */
     public function sendAuthorizationRequestEmailMessage(string $email, string $authorizationHash)
     {
+        // TODO: make configurable: paths
         $authorizeUrl = $this->router->generate('authorize_email_login', array('authorizationHash' => $authorizationHash), UrlGeneratorInterface::ABSOLUTE_URL);
         $refuseUrl = $this->router->generate('refuse_email_login', array('authorizationHash' => $authorizationHash), UrlGeneratorInterface::ABSOLUTE_URL);
 
@@ -104,6 +105,7 @@ class TwigSwiftMailer implements MailerInterface
             'refuseUrl' => $refuseUrl,
         );
 
+        // TODO: make configurable: template, from
         $this->sendMessage('emails/authorization/login.html.twig', $context,'fox.guard@example.com', $email);
     }
 }

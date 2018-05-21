@@ -24,6 +24,7 @@ class EmailAuthenticationListener implements ListenerInterface
     protected $tokenStorage;
     protected $authenticationManager;
     protected $providerKey;
+    protected $emailParameter;
     protected $preAuthenticationSuccessHandler;
     protected $preAuthenticationFailureHandler;
     protected $authenticationSuccessHandler;
@@ -36,6 +37,7 @@ class EmailAuthenticationListener implements ListenerInterface
         TokenStorageInterface $tokenStorage,
         AuthenticationManagerInterface $authenticationManager,
         string $providerKey,
+        string $emailParameter,
         PreAuthenticationSuccessHandlerInterface $preAuthenticationSuccessHandler,
         PreAuthenticationFailureHandlerInterface $preAuthenticationFailureHandler,
         AuthenticationSuccessHandlerInterface $authenticationSuccessHandler,
@@ -45,6 +47,7 @@ class EmailAuthenticationListener implements ListenerInterface
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
         $this->providerKey = $providerKey;
+        $this->emailParameter = $emailParameter;
         $this->preAuthenticationSuccessHandler = $preAuthenticationSuccessHandler;
         $this->preAuthenticationFailureHandler = $preAuthenticationFailureHandler;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
@@ -66,8 +69,8 @@ class EmailAuthenticationListener implements ListenerInterface
         $request = $event->getRequest();
 
         // Step 1. request authorization from user by mail
-        if ($request->request->has('email_auth')) {
-            $email = $request->request->get('email_auth');
+        if ($request->request->has($this->emailParameter)) {
+            $email = $request->request->get($this->emailParameter);
 
             $response = null;
 

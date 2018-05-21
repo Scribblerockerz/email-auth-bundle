@@ -57,12 +57,13 @@ class EmailAuthenticationListenerTest extends TestCase
             ->willReturn(new Response('failure'));
     }
 
-    protected function createListener($providerKey = 'foo')
+    protected function createListener($providerKey = 'foo', $configEmailParameter = 'email_auth')
     {
         return new EmailAuthenticationListener(
             $this->tokenStorage,
             $this->authenticationManager,
             $providerKey,
+            $configEmailParameter,
             $this->preAuthenticationSuccessHandler,
             $this->preAuthenticationFailureHandler,
             $this->authenticationSuccessHandler,
@@ -76,9 +77,21 @@ class EmailAuthenticationListenerTest extends TestCase
         $listener->setRememberMeServices($this->createMock(RememberMeServicesInterface::class));
     }
 
-    public function testRequestAuthorizationFromUserByMail()
+    public function getRequestAuthorizationFromUserData()
     {
-        $listener = $this->createListener('foo');
+        return array(
+            array('email_auth'),
+            array('foo'),
+            array('bar123'),
+        );
+    }
+
+    /**
+     * @dataProvider getRequestAuthorizationFromUserData()
+     */
+    public function testRequestAuthorizationFromUserByMail($emailFormParameter)
+    {
+        $listener = $this->createListener('foo', $emailFormParameter);
 
         $rememberMeService = $this->createMock(RememberMeServicesInterface::class);
         $rememberMeService->expects($this->once())
@@ -100,13 +113,13 @@ class EmailAuthenticationListenerTest extends TestCase
         $request->request
             ->expects($this->atLeastOnce())
             ->method('has')
-            ->with('email_auth')
+            ->with($emailFormParameter)
             ->willReturn(true);
 
         $request->request
             ->expects($this->atLeastOnce())
             ->method('get')
-            ->with('email_auth')
+            ->with($emailFormParameter)
             ->willReturn('john@example.com');
 
         // build fake event

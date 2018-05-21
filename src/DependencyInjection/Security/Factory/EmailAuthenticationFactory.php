@@ -3,6 +3,7 @@
 namespace Rockz\EmailAuthBundle\DependencyInjection\Security\Factory;
 
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -78,6 +79,7 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
 
         $listener = new ChildDefinition('rockz_email_auth.security_firewall.email_authentication_listener');
         $listener->setArgument('$providerKey', $firewallName);
+        $listener->replaceArgument('$emailParameter', $config['email_parameter']);
         $listener->replaceArgument('$preAuthenticationSuccessHandler', new Reference($this->createPreAuthenticationSuccessHandler($container, $firewallName, $config)));
         $listener->replaceArgument('$preAuthenticationFailureHandler', new Reference($this->createPreAuthenticationFailureHandler($container, $firewallName, $config)));
         $listener->replaceArgument('$authenticationSuccessHandler', new Reference($this->createSuccessHandler($container, $firewallName, $config)));
@@ -226,14 +228,18 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
      */
     public function addConfiguration(NodeDefinition $builder)
     {
+        /** @var ArrayNodeDefinition $builder */
         $builder
             ->children()
 //                ->scalarNode('provider')->end()
                 ->booleanNode('remember_me')->defaultTrue()->end()
                 ->scalarNode('pre_auth_success_handler')->end()
-                ->scalarNode('success_handler')->end()
                 ->scalarNode('pre_auth_failure_handler')->end()
+                ->scalarNode('success_handler')->end()
                 ->scalarNode('failure_handler')->end()
+                ->scalarNode('email_parameter')
+                    ->defaultValue('email_auth')
+                ->end()
             ->end();
     }
 }

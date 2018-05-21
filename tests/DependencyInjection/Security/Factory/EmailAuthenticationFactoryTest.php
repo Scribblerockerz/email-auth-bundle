@@ -16,6 +16,7 @@ class EmailAuthenticationFactoryTest extends TestCase
 //            'use_forward' => true,
 //            'failure_path' => '/foo',
             'remember_me' => true,
+            'email_parameter' => 'email_auth',
         ), 'user_provider', 'entry_point');
 
 
@@ -63,6 +64,7 @@ class EmailAuthenticationFactoryTest extends TestCase
         $definition = $container->getDefinition('security.authentication.rockz_email_auth_listener.foo');
         $this->assertEquals(array(
             '$providerKey' => 'foo',
+            '$emailParameter' => 'email_auth',
             '$preAuthenticationSuccessHandler' => new Reference('rockz_email_auth.security_http_authentication.email_authentication_pre_auth_success_handler.foo'),
             '$preAuthenticationFailureHandler' => new Reference('rockz_email_auth.security_http_authentication.email_authentication_pre_auth_failure_handler.foo'),
             '$authenticationSuccessHandler' => new Reference('rockz_email_auth.security_http_authentication.email_authentication_success_handler.foo'),
@@ -91,34 +93,6 @@ class EmailAuthenticationFactoryTest extends TestCase
         $this->assertEquals(array(
             '$httpUtils' => new Reference('security.http_utils')
         ), $definition->getArguments());
-    }
-
-    /**
-     * This test is responsible to check if the default or custom handlers
-     * are setup properly with their respective ids
-     *
-     * @dataProvider getHandlers
-     */
-    public function testDefaultHandlerConfiguration($handlerKey, $handlerServiceId, $testedArgument, $expectedServiceId)
-    {
-        $options = array(
-            'remember_me' => true,
-        );
-
-        if ($handlerServiceId) {
-            $options[$handlerKey] = $handlerServiceId;
-        }
-
-        list($container, $authProviderId, $listenerId, $entryPointId) = $this->callFactory('foo', $options, 'user_provider', 'entry_point');
-
-        $definition = $container->getDefinition($listenerId);
-        $arguments = $definition->getArguments();
-
-        $this->assertEquals(
-            new Reference($expectedServiceId),
-            $arguments[$testedArgument],
-            'There must be a handler anyway! (default or not)'
-        );
     }
 
     public function getHandlers()
@@ -192,6 +166,35 @@ class EmailAuthenticationFactoryTest extends TestCase
         );
     }
 
+    /**
+     * This test is responsible to check if the default or custom handlers
+     * are setup properly with their respective ids
+     *
+     * @dataProvider getHandlers
+     */
+    public function testDefaultHandlerConfiguration($handlerKey, $handlerServiceId, $testedArgument, $expectedServiceId)
+    {
+        $options = array(
+            'remember_me' => true,
+            'email_parameter' => 'email_auth',
+        );
+
+        if ($handlerServiceId) {
+            $options[$handlerKey] = $handlerServiceId;
+        }
+
+        list($container, $authProviderId, $listenerId, $entryPointId) = $this->callFactory('foo', $options, 'user_provider', 'entry_point');
+
+        $definition = $container->getDefinition($listenerId);
+        $arguments = $definition->getArguments();
+
+        $this->assertEquals(
+            new Reference($expectedServiceId),
+            $arguments[$testedArgument],
+            'There must be a handler anyway! (default or not)'
+        );
+    }
+
     public function testGetPosition()
     {
         $factory = new EmailAuthenticationFactory();
@@ -202,6 +205,41 @@ class EmailAuthenticationFactoryTest extends TestCase
     {
         $factory = new EmailAuthenticationFactory();
         $this->assertSame('rockz_email_auth', $factory->getKey());
+    }
+
+    public function getValidConfigurationTests()
+    {
+        $tests = array();
+
+        // completely basic
+        $tests[] = array(
+            array(),
+            array(
+                'remember_me' => true,
+                'email_parameter' => 'email_auth'
+            ),
+        );
+
+        // custom handler
+        $tests[] = array(
+            array(
+                'email_parameter' => 'blub',
+                'pre_auth_success_handler' => 'foo',
+                'pre_auth_failure_handler' => 'bar',
+                'success_handler' => 'baz',
+                'failure_handler' => 'toot',
+            ),
+            array(
+                'remember_me' => true,
+                'email_parameter' => 'blub',
+                'pre_auth_success_handler' => 'foo',
+                'pre_auth_failure_handler' => 'bar',
+                'success_handler' => 'baz',
+                'failure_handler' => 'toot',
+            ),
+        );
+
+        return $tests;
     }
 
     /**
@@ -219,38 +257,6 @@ class EmailAuthenticationFactoryTest extends TestCase
         $finalizedConfig = $node->finalize($normalizedConfig);
 
         $this->assertEquals($expectedConfig, $finalizedConfig);
-    }
-
-    public function getValidConfigurationTests()
-    {
-        $tests = array();
-
-        // completely basic
-        $tests[] = array(
-            array(),
-            array(
-                'remember_me' => true,
-            ),
-        );
-
-        // custom handler
-        $tests[] = array(
-            array(
-                'pre_auth_success_handler' => 'foo',
-                'pre_auth_failure_handler' => 'bar',
-                'success_handler' => 'baz',
-                'failure_handler' => 'toot',
-            ),
-            array(
-                'remember_me' => true,
-                'pre_auth_success_handler' => 'foo',
-                'pre_auth_failure_handler' => 'bar',
-                'success_handler' => 'baz',
-                'failure_handler' => 'toot',
-            ),
-        );
-
-        return $tests;
     }
 
     protected function callFactory($id, $config, $userProviderId, $defaultEntryPointId)

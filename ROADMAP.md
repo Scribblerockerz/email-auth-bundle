@@ -19,3 +19,14 @@ This is more of a todo for this project.
         _rockz_email_auth:
           resource: "@RockzEmailAuthBundle/Resources/config/routes.xml"
         ```
+    - form:
+        ```html
+        <form action="" method="post">
+            <fieldset>
+                <legend>Authenticate yourself by mail</legend>
+                <label for="email_auth">Email</label>
+                <input type="text" name="email_auth" id="email_auth">
+            </fieldset>
+            <button>submit</button>
+        </form>
+        ```

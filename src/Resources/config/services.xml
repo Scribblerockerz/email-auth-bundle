@@ -16,7 +16,8 @@
         <service id="rockz_email_auth.security_firewall.email_authentication_listener" class="Rockz\EmailAuthBundle\Security\Firewall\EmailAuthenticationListener" public="false">
             <argument type="service" id="security.token_storage"/>
             <argument type="service" id="security.authentication.manager"/>
-            <argument/>
+            <argument key="$providerKey"/>
+            <argument key="$emailParameter"/>
             <argument key="$preAuthenticationSuccessHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_success_handler"/>
             <argument key="$preAuthenticationFailureHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler"/>
             <argument key="$authenticationSuccessHandler" type="service" id="rockz_email_auth.security_http_authentication.email_authentication_success_handler"/>

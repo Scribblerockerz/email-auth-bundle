@@ -8,13 +8,22 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\HttpUtils;
 
+/**
+ * Class EmailAuthenticationSuccessHandler
+ *
+ * TODO: split this class into pre- and authentication handler, since configuration is confusing
+ *
+ * @package Rockz\EmailAuthBundle\Security\Http\Authentication
+ */
 class EmailAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface, PreAuthenticationSuccessHandlerInterface
 {
     protected $httpUtils;
+    protected $redirectPath;
 
-    public function __construct(HttpUtils $httpUtils)
+    public function __construct(HttpUtils $httpUtils, string $redirectPath)
     {
         $this->httpUtils = $httpUtils;
+        $this->redirectPath = $redirectPath;
     }
 
     /**
@@ -30,7 +39,7 @@ class EmailAuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
-        return $this->httpUtils->createRedirectResponse($request, '/');
+        return $this->httpUtils->createRedirectResponse($request, $this->redirectPath);
     }
 
     /**
@@ -46,6 +55,6 @@ class EmailAuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      */
     public function onPreAuthenticationSuccess(Request $request, TokenInterface $token)
     {
-        return $this->httpUtils->createRedirectResponse($request, '/waiting');
+        return $this->httpUtils->createRedirectResponse($request, $this->redirectPath);
     }
 }

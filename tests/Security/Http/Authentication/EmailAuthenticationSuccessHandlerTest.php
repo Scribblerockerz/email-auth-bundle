@@ -13,12 +13,24 @@ class EmailAuthenticationSuccessHandlerTest extends TestCase
     public function testInstantiation()
     {
         $httpUtils = $this->createMock(HttpUtils::class);
-        $successHandler = new EmailAuthenticationSuccessHandler($httpUtils);
+        $successHandler = new EmailAuthenticationSuccessHandler($httpUtils, '/');
 
         $this->assertInstanceOf(EmailAuthenticationSuccessHandler::class, $successHandler);
     }
 
-    public function testOnAuthenticationSuccess()
+    public function getRedirectConfiguration()
+    {
+        return array(
+            array('/'),
+            array('/waiting'),
+            array('/please-hold-the-lion'),
+        );
+    }
+
+    /**
+     * @dataProvider getRedirectConfiguration()
+     */
+    public function testOnAuthenticationSuccess($configuredRedirectPath)
     {
         $httpUtils = $this->createMock(HttpUtils::class);
         $httpUtils
@@ -29,15 +41,18 @@ class EmailAuthenticationSuccessHandlerTest extends TestCase
                 return $redirectPath;
             });
 
-        $successHandler = new EmailAuthenticationSuccessHandler($httpUtils);
+        $successHandler = new EmailAuthenticationSuccessHandler($httpUtils, $configuredRedirectPath);
         $request = $this->createMock(Request::class);
 
         $responsePath = $successHandler->onAuthenticationSuccess($request, $this->createMock(TokenInterface::class));
 
-        $this->assertSame('/', $responsePath);
+        $this->assertSame($configuredRedirectPath, $responsePath);
     }
 
-    public function testOnPreAuthenticationSuccess()
+    /**
+     * @dataProvider getRedirectConfiguration()
+     */
+    public function testOnPreAuthenticationSuccess($configuredRedirectPath)
     {
         $httpUtils = $this->createMock(HttpUtils::class);
         $httpUtils
@@ -48,11 +63,11 @@ class EmailAuthenticationSuccessHandlerTest extends TestCase
                 return $redirectPath;
             });
 
-        $successHandler = new EmailAuthenticationSuccessHandler($httpUtils);
+        $successHandler = new EmailAuthenticationSuccessHandler($httpUtils, $configuredRedirectPath);
         $request = $this->createMock(Request::class);
 
         $responsePath = $successHandler->onPreAuthenticationSuccess($request, $this->createMock(TokenInterface::class));
 
-        $this->assertSame('/waiting', $responsePath);
+        $this->assertSame($configuredRedirectPath, $responsePath);
     }
 }

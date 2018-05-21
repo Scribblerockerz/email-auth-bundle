@@ -13,31 +13,24 @@ class EmailAuthenticationFailureHandlerTest extends TestCase
     public function testInstantiation()
     {
         $httpUtils = $this->createMock(HttpUtils::class);
-        $successHandler = new EmailAuthenticationFailureHandler($httpUtils);
+        $successHandler = new EmailAuthenticationFailureHandler($httpUtils, '/');
 
         $this->assertInstanceOf(EmailAuthenticationFailureHandler::class, $successHandler);
     }
 
-    public function testOnAuthenticationSuccess()
+    public function getRedirectConfiguration()
     {
-        $httpUtils = $this->createMock(HttpUtils::class);
-        $httpUtils
-            ->expects($this->once())
-            ->method('createRedirectResponse')
-            ->willReturnCallback(function ($firstArg, $redirectPath) {
-                // test the arguments only
-                return $redirectPath;
-            });
-
-        $successHandler = new EmailAuthenticationFailureHandler($httpUtils);
-        $request = $this->createMock(Request::class);
-
-        $responsePath = $successHandler->onAuthenticationFailure($request, new AuthenticationException());
-
-        $this->assertSame('/#total_failure', $responsePath);
+        return array(
+            array('/'),
+            array('/failed'),
+            array('/not-working'),
+        );
     }
 
-    public function testOnPreAuthenticationSuccess()
+    /**
+     * @dataProvider getRedirectConfiguration
+     */
+    public function testOnAuthenticationFailure($configuredRedirectPath)
     {
         $httpUtils = $this->createMock(HttpUtils::class);
         $httpUtils
@@ -48,11 +41,33 @@ class EmailAuthenticationFailureHandlerTest extends TestCase
                 return $redirectPath;
             });
 
-        $successHandler = new EmailAuthenticationFailureHandler($httpUtils);
+        $failureHandler = new EmailAuthenticationFailureHandler($httpUtils, $configuredRedirectPath);
         $request = $this->createMock(Request::class);
 
-        $responsePath = $successHandler->onPreAuthenticationFailure($request, new AuthenticationException());
+        $responsePath = $failureHandler->onAuthenticationFailure($request, new AuthenticationException());
 
-        $this->assertSame('/access#partial_failure', $responsePath);
+        $this->assertSame($configuredRedirectPath, $responsePath);
+    }
+
+    /**
+     * @dataProvider getRedirectConfiguration
+     */
+    public function testOnPreAuthenticationFailure($configuredRedirectPath)
+    {
+        $httpUtils = $this->createMock(HttpUtils::class);
+        $httpUtils
+            ->expects($this->once())
+            ->method('createRedirectResponse')
+            ->willReturnCallback(function ($firstArg, $redirectPath) {
+                // test the arguments only
+                return $redirectPath;
+            });
+
+        $failureHandler = new EmailAuthenticationFailureHandler($httpUtils, $configuredRedirectPath);
+        $request = $this->createMock(Request::class);
+
+        $responsePath = $failureHandler->onPreAuthenticationFailure($request, new AuthenticationException());
+
+        $this->assertSame($configuredRedirectPath, $responsePath);
     }
 }

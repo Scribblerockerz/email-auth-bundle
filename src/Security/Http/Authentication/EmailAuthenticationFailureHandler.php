@@ -10,10 +10,15 @@ use Symfony\Component\Security\Http\HttpUtils;
 class EmailAuthenticationFailureHandler implements AuthenticationFailureHandlerInterface, PreAuthenticationFailureHandlerInterface
 {
     protected $httpUtils;
+    /**
+     * @var string
+     */
+    protected $redirectPath;
 
-    public function __construct(HttpUtils $httpUtils)
+    public function __construct(HttpUtils $httpUtils, string $redirectPath)
     {
         $this->httpUtils = $httpUtils;
+        $this->redirectPath = $redirectPath;
     }
 
     /**
@@ -27,7 +32,7 @@ class EmailAuthenticationFailureHandler implements AuthenticationFailureHandlerI
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        return $this->httpUtils->createRedirectResponse($request, '/#total_failure');
+        return $this->httpUtils->createRedirectResponse($request, $this->redirectPath);
     }
 
     /**
@@ -42,6 +47,6 @@ class EmailAuthenticationFailureHandler implements AuthenticationFailureHandlerI
      */
     public function onPreAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        return $this->httpUtils->createRedirectResponse($request, '/access#partial_failure');
+        return $this->httpUtils->createRedirectResponse($request, $this->redirectPath);
     }
 }

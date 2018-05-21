@@ -17,6 +17,10 @@ class EmailAuthenticationFactoryTest extends TestCase
 //            'failure_path' => '/foo',
             'remember_me' => true,
             'email_parameter' => 'email_auth',
+            'pre_auth_success_redirect' => '/waiting',
+            'pre_auth_failure_redirect' => '/#partial_failure',
+            'success_redirect' => '/',
+            'failure_redirect' => '/#total_failure',
         ), 'user_provider', 'entry_point');
 
 
@@ -177,6 +181,10 @@ class EmailAuthenticationFactoryTest extends TestCase
         $options = array(
             'remember_me' => true,
             'email_parameter' => 'email_auth',
+            'pre_auth_success_redirect' => '/please-wait-right-here',
+            'pre_auth_failure_redirect' => '/something-went-wrong',
+            'success_redirect' => '/woop-woop',
+            'failure_redirect' => '/damn',
         );
 
         if ($handlerServiceId) {
@@ -216,7 +224,11 @@ class EmailAuthenticationFactoryTest extends TestCase
             array(),
             array(
                 'remember_me' => true,
-                'email_parameter' => 'email_auth'
+                'email_parameter' => 'email_auth',
+                'pre_auth_success_redirect' => '/waiting',
+                'pre_auth_failure_redirect' => '/#partial_failure',
+                'success_redirect' => '/',
+                'failure_redirect' => '/#total_failure',
             ),
         );
 
@@ -228,6 +240,10 @@ class EmailAuthenticationFactoryTest extends TestCase
                 'pre_auth_failure_handler' => 'bar',
                 'success_handler' => 'baz',
                 'failure_handler' => 'toot',
+                'pre_auth_success_redirect' => '/please-wait-right-here',
+                'pre_auth_failure_redirect' => '/something-went-wrong',
+                'success_redirect' => '/woop-woop',
+                'failure_redirect' => '/damn',
             ),
             array(
                 'remember_me' => true,
@@ -236,6 +252,10 @@ class EmailAuthenticationFactoryTest extends TestCase
                 'pre_auth_failure_handler' => 'bar',
                 'success_handler' => 'baz',
                 'failure_handler' => 'toot',
+                'pre_auth_success_redirect' => '/please-wait-right-here',
+                'pre_auth_failure_redirect' => '/something-went-wrong',
+                'success_redirect' => '/woop-woop',
+                'failure_redirect' => '/damn',
             ),
         );
 

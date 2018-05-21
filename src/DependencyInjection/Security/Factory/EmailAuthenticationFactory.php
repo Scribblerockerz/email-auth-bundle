@@ -101,11 +101,17 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
         $defaultSuccessHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_success_handler';
         $successHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_pre_auth_success_handler'.'.'.$firewallName;
 
+        $successHandler = null;
+
         if (isset($config['pre_auth_success_handler'])) {
-            $container->setDefinition($successHandlerId, new ChildDefinition($config['pre_auth_success_handler']));
+            $successHandler = new ChildDefinition($config['pre_auth_success_handler']);
         } else {
-            $container->setDefinition($successHandlerId, new ChildDefinition($defaultSuccessHandlerId));
+            $successHandler = new ChildDefinition($defaultSuccessHandlerId);
         }
+
+        $successHandler->replaceArgument('$redirectPath', $config['pre_auth_success_redirect']);
+
+        $container->setDefinition($successHandlerId, $successHandler);
 
         return $successHandlerId;
     }
@@ -121,11 +127,17 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
         $defaultFailureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler';
         $failureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_pre_auth_failure_handler'.'.'.$firewallName;
 
+        $failureHandler = null;
+
         if (isset($config['pre_auth_failure_handler'])) {
-            $container->setDefinition($failureHandlerId, new ChildDefinition($config['pre_auth_failure_handler']));
+            $failureHandler = new ChildDefinition($config['pre_auth_failure_handler']);
         } else {
-            $container->setDefinition($failureHandlerId, new ChildDefinition($defaultFailureHandlerId));
+            $failureHandler = new ChildDefinition($defaultFailureHandlerId);
         }
+
+        $failureHandler->replaceArgument('$redirectPath', $config['pre_auth_failure_redirect']);
+
+        $container->setDefinition($failureHandlerId, $failureHandler);
 
         return $failureHandlerId;
     }
@@ -141,11 +153,17 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
         $defaultSuccessHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_success_handler';
         $successHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_success_handler'.'.'.$firewallName;
 
+        $successHandler = null;
+
         if (isset($config['success_handler'])) {
-            $container->setDefinition($successHandlerId, new ChildDefinition($config['success_handler']));
+            $successHandler = new ChildDefinition($config['success_handler']);
         } else {
-            $container->setDefinition($successHandlerId, new ChildDefinition($defaultSuccessHandlerId));
+            $successHandler = new ChildDefinition($defaultSuccessHandlerId);
         }
+
+        $successHandler->replaceArgument('$redirectPath', $config['success_redirect']);
+
+        $container->setDefinition($successHandlerId, $successHandler);
 
         return $successHandlerId;
     }
@@ -161,11 +179,17 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
         $defaultFailureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler';
         $failureHandlerId = 'rockz_email_auth.security_http_authentication.email_authentication_failure_handler'.'.'.$firewallName;
 
+        $failureHandler = null;
+
         if (isset($config['failure_handler'])) {
-            $container->setDefinition($failureHandlerId, new ChildDefinition($config['failure_handler']));
+            $failureHandler = new ChildDefinition($config['failure_handler']);
         } else {
-            $container->setDefinition($failureHandlerId, new ChildDefinition($defaultFailureHandlerId));
+            $failureHandler = new ChildDefinition($defaultFailureHandlerId);
         }
+
+        $failureHandler->replaceArgument('$redirectPath', $config['failure_redirect']);
+
+        $container->setDefinition($failureHandlerId, $failureHandler);
 
         return $failureHandlerId;
     }
@@ -239,6 +263,18 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                 ->scalarNode('failure_handler')->end()
                 ->scalarNode('email_parameter')
                     ->defaultValue('email_auth')
+                ->end()
+                ->scalarNode('pre_auth_success_redirect')
+                    ->defaultValue('/waiting')
+                ->end()
+                ->scalarNode('pre_auth_failure_redirect')
+                    ->defaultValue('/#partial_failure')
+                ->end()
+                ->scalarNode('success_redirect')
+                    ->defaultValue('/')
+                ->end()
+                ->scalarNode('failure_redirect')
+                    ->defaultValue('/#total_failure')
                 ->end()
             ->end();
     }

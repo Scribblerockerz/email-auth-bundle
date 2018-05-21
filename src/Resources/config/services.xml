@@ -32,10 +32,13 @@
 
         <service id="rockz_email_auth.security_http_authentication.email_authentication_success_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationSuccessHandler">
             <argument type="service" id="security.http_utils"/>
+            <argument type="service" id="router.default"/>
             <argument key="$redirectPath"/>
         </service>
         <service id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationFailureHandler">
             <argument type="service" id="security.http_utils"/>
+            <argument type="service" id="router.default"/>
+            <argument key="$redirectPath"/>
         </service>
 
         <service id="rockz_email_auth.repository.auth_session_repository" class="Rockz\EmailAuthBundle\Repository\AuthSessionRepository">

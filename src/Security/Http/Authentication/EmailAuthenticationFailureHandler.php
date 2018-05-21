@@ -4,21 +4,21 @@ namespace Rockz\EmailAuthBundle\Security\Http\Authentication;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\HttpUtils;
 
 class EmailAuthenticationFailureHandler implements AuthenticationFailureHandlerInterface, PreAuthenticationFailureHandlerInterface
 {
     protected $httpUtils;
-    /**
-     * @var string
-     */
     protected $redirectPath;
+    protected $router;
 
-    public function __construct(HttpUtils $httpUtils, string $redirectPath)
+    public function __construct(HttpUtils $httpUtils, UrlGeneratorInterface $router, string $redirectPath)
     {
         $this->httpUtils = $httpUtils;
         $this->redirectPath = $redirectPath;
+        $this->router = $router;
     }
 
     /**
@@ -32,7 +32,13 @@ class EmailAuthenticationFailureHandler implements AuthenticationFailureHandlerI
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        return $this->httpUtils->createRedirectResponse($request, $this->redirectPath);
+        $path = $this->redirectPath;
+
+        if (substr($path, 0, 4) != 'http' && substr($path, 0, 1) != '/') {
+            $path = $this->router->generate($path);
+        }
+
+        return $this->httpUtils->createRedirectResponse($request, $path);
     }
 
     /**
@@ -47,6 +53,12 @@ class EmailAuthenticationFailureHandler implements AuthenticationFailureHandlerI
      */
     public function onPreAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        return $this->httpUtils->createRedirectResponse($request, $this->redirectPath);
+        $path = $this->redirectPath;
+
+        if (substr($path, 0, 4) != 'http' && substr($path, 0, 1) != '/') {
+            $path = $this->router->generate($path);
+        }
+
+        return $this->httpUtils->createRedirectResponse($request, $path);
     }
 }

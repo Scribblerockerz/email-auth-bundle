@@ -14,7 +14,7 @@ namespace Rockz\EmailAuthBundle\Mailer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * @author Christophe Coevoet <stof@notk.org>
+ * TODO: refactor this class!
  */
 class TwigSwiftMailer implements MailerInterface
 {

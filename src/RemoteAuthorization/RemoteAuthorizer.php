@@ -3,7 +3,7 @@
 namespace Rockz\EmailAuthBundle\RemoteAuthorization;
 
 use Rockz\EmailAuthBundle\Entity\AuthSession;
-use Rockz\EmailAuthBundle\Mailer\TwigSwiftMailer;
+use Rockz\EmailAuthBundle\Mailer\AuthorizationMailer;
 use Rockz\EmailAuthBundle\RemoteAuthorization\Exception\SessionNotFoundException;
 use Rockz\EmailAuthBundle\Repository\AuthSessionRepository;
 
@@ -19,11 +19,11 @@ class RemoteAuthorizer implements RemoteAuthorizerInterface
     protected $authSessionRepository;
 
     /**
-     * @var TwigSwiftMailer
+     * @var AuthorizationMailer
      */
     protected $mailer;
 
-    public function __construct(AuthSessionRepository $authSessionRepository, TwigSwiftMailer $mailer)
+    public function __construct(AuthSessionRepository $authSessionRepository, AuthorizationMailer $mailer)
     {
         $this->authSessionRepository = $authSessionRepository;
         $this->mailer = $mailer;
@@ -35,10 +35,6 @@ class RemoteAuthorizer implements RemoteAuthorizerInterface
      *
      * @param string $email
      * @return string
-     * @throws \Throwable
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function requestAuthorization(string $email): string
     {

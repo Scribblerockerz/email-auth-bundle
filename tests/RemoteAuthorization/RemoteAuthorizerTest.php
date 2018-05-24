@@ -4,6 +4,7 @@ namespace Tests\Rockz\EmailAuthBundle\RemoteAuthorization;
 
 use PHPUnit\Framework\TestCase;
 use Rockz\EmailAuthBundle\Entity\AuthSession;
+use Rockz\EmailAuthBundle\Mailer\AuthorizationMailer;
 use Rockz\EmailAuthBundle\Mailer\TwigSwiftMailer;
 use Rockz\EmailAuthBundle\RemoteAuthorization\Exception\SessionNotFoundException;
 use Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer;
@@ -12,21 +13,16 @@ use Rockz\EmailAuthBundle\Repository\AuthSessionRepository;
 
 class RemoteAuthorizerTest extends TestCase
 {
-    /** @var \PHPUnit_Framework_MockObject_MockObject */
     private $authSessionRepository;
-
-    /** @var \PHPUnit_Framework_MockObject_MockObject */
-    private $twigSwiftMailer;
-
-    /** @var RemoteAuthorizer */
+    private $authorizationMailer;
     private $remoteAuthorizer;
 
     protected function setUp()
     {
         $this->authSessionRepository = $this->createMock(AuthSessionRepository::class);
-        $this->twigSwiftMailer = $this->createMock(TwigSwiftMailer::class);
+        $this->authorizationMailer = $this->createMock(AuthorizationMailer::class);
 
-        $this->remoteAuthorizer = new RemoteAuthorizer($this->authSessionRepository, $this->twigSwiftMailer);
+        $this->remoteAuthorizer = new RemoteAuthorizer($this->authSessionRepository, $this->authorizationMailer);
     }
 
     public function testConstructor()
@@ -74,7 +70,7 @@ class RemoteAuthorizerTest extends TestCase
                 )
             );
 
-        $this->twigSwiftMailer
+        $this->authorizationMailer
             ->expects($this->once())
             ->method('sendAuthorizationRequestEmailMessage')
             ->will(

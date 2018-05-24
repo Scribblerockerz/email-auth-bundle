@@ -11,22 +11,12 @@
 
 namespace Rockz\EmailAuthBundle\Mailer;
 
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-/**
- * TODO: refactor this class!
- */
-class TwigSwiftMailer implements MailerInterface
+class TwigSwiftMailer implements TemplateAwareMailerInterface
 {
     /**
      * @var \Swift_Mailer
      */
     protected $mailer;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    protected $router;
 
     /**
      * @var \Twig_Environment
@@ -36,14 +26,12 @@ class TwigSwiftMailer implements MailerInterface
     /**
      * TwigSwiftMailer constructor.
      *
-     * @param \Swift_Mailer         $mailer
-     * @param UrlGeneratorInterface $router
-     * @param \Twig_Environment     $twig
+     * @param \Swift_Mailer $mailer
+     * @param \Twig_Environment $twig
      */
-    public function __construct(\Swift_Mailer $mailer, UrlGeneratorInterface $router, \Twig_Environment $twig)
+    public function __construct(\Swift_Mailer $mailer, \Twig_Environment $twig)
     {
         $this->mailer = $mailer;
-        $this->router = $router;
         $this->twig = $twig;
     }
 
@@ -57,7 +45,7 @@ class TwigSwiftMailer implements MailerInterface
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    protected function sendMessage($templateName, $context, $fromEmail, $toEmail)
+    public function sendMessage($templateName, $context, $fromEmail, $toEmail)
     {
         $template = $this->twig->load($templateName);
         $subject = $template->renderBlock('subject', $context);
@@ -82,30 +70,5 @@ class TwigSwiftMailer implements MailerInterface
         }
 
         $this->mailer->send($message);
-    }
-
-    /**
-     * Send an email to a user to confirm the account creation.
-     *
-     * @param string $email
-     * @param string $authorizationHash
-     * @throws \Throwable
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    public function sendAuthorizationRequestEmailMessage(string $email, string $authorizationHash)
-    {
-        // TODO: make configurable: paths
-        $authorizeUrl = $this->router->generate('rockz_email_auth_authorization_authorize', array('authorizationHash' => $authorizationHash), UrlGeneratorInterface::ABSOLUTE_URL);
-        $refuseUrl = $this->router->generate('rockz_email_auth_authorization_refuse', array('authorizationHash' => $authorizationHash), UrlGeneratorInterface::ABSOLUTE_URL);
-
-        $context = array(
-            'authorizeUrl' => $authorizeUrl,
-            'refuseUrl' => $refuseUrl,
-        );
-
-        // TODO: make configurable: template, from
-        $this->sendMessage('emails/authorization/login.html.twig', $context,'fox.guard@example.com', $email);
     }
 }

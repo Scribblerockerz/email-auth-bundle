@@ -4,6 +4,7 @@ namespace Rockz\EmailAuthBundle\Security\Http\EntryPoint;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\HttpUtils;
@@ -11,10 +12,14 @@ use Symfony\Component\Security\Http\HttpUtils;
 class EmailAuthenticationEntryPoint implements AuthenticationEntryPointInterface
 {
     protected $httpUtils;
+    protected $router;
+    protected $redirectPath;
 
-    public function __construct(HttpUtils $httpUtils)
+    public function __construct(HttpUtils $httpUtils, UrlGeneratorInterface $router, string $redirectPath)
     {
         $this->httpUtils = $httpUtils;
+        $this->router = $router;
+        $this->redirectPath = $redirectPath;
     }
 
     /**
@@ -37,6 +42,12 @@ class EmailAuthenticationEntryPoint implements AuthenticationEntryPointInterface
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        return $this->httpUtils->createRedirectResponse($request, '/access');
+        $path = $this->redirectPath;
+
+        if (substr($path, 0, 4) != 'http' && substr($path, 0, 1) != '/') {
+            $path = $this->router->generate($path);
+        }
+
+        return $this->httpUtils->createRedirectResponse($request, $path);
     }
 }

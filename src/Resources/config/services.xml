@@ -7,6 +7,8 @@
         <!-- services -->
         <service id="rockz_email_auth.security_http_entry_point.email_authentication_entry_point" class="Rockz\EmailAuthBundle\Security\Http\EntryPoint\EmailAuthenticationEntryPoint" public="false">
             <argument type="service" id="security.http_utils"/>
+            <argument type="service" id="router.default"/>
+            <argument key="$redirectPath"/>
         </service>
 
         <service id="rockz_email_auth.controller.authorization_controller" class="Rockz\EmailAuthBundle\Controller\AuthorizationController" public="true">

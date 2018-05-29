@@ -5,6 +5,7 @@ namespace Tests\Rockz\EmailAuthBundle\DependencyInjection\Security\Factory;
 use PHPUnit\Framework\TestCase;
 use Rockz\EmailAuthBundle\Security\Http\EntryPoint\EmailAuthenticationEntryPoint;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
 class EmailAuthenticationEntryPointTest extends TestCase
@@ -12,7 +13,8 @@ class EmailAuthenticationEntryPointTest extends TestCase
     public function testInstantiation()
     {
         $httpUtils = $this->createMock(HttpUtils::class);
-        $entryPoint = new EmailAuthenticationEntryPoint($httpUtils);
+        $router = $this->createMock(UrlGeneratorInterface::class);
+        $entryPoint = new EmailAuthenticationEntryPoint($httpUtils, $router, '/');
 
         $this->assertInstanceOf(EmailAuthenticationEntryPoint::class, $entryPoint);
     }
@@ -28,11 +30,13 @@ class EmailAuthenticationEntryPointTest extends TestCase
                 return $redirectPath;
             });
 
-        $entryPoint = new EmailAuthenticationEntryPoint($httpUtils);
+        $router = $this->createMock(UrlGeneratorInterface::class);
+
+        $entryPoint = new EmailAuthenticationEntryPoint($httpUtils, $router, '/foo');
         $request = $this->createMock(Request::class);
 
         $responsePath = $entryPoint->start($request);
 
-        $this->assertSame('/access', $responsePath);
+        $this->assertSame('/foo', $responsePath);
     }
 }

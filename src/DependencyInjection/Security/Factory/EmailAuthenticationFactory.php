@@ -208,7 +208,8 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                 $entryPointId,
                 new ChildDefinition('rockz_email_auth.security_http_entry_point.email_authentication_entry_point')
             )
-            ->setArgument('$httpUtils', new Reference('security.http_utils'));
+            ->setArgument('$httpUtils', new Reference('security.http_utils'))
+            ->replaceArgument('$redirectPath', $config['initial_redirect']);;
 
         return $entryPointId;
     }
@@ -263,6 +264,9 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                 ->scalarNode('failure_handler')->end()
                 ->scalarNode('email_parameter')
                     ->defaultValue('email_auth')
+                ->end()
+                ->scalarNode('initial_redirect')
+                    ->defaultValue('/access')
                 ->end()
                 ->scalarNode('pre_auth_success_redirect')
                     ->defaultValue('/waiting')

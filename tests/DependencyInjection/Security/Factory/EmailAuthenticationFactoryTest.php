@@ -17,6 +17,7 @@ class EmailAuthenticationFactoryTest extends TestCase
 //            'failure_path' => '/foo',
             'remember_me' => true,
             'email_parameter' => 'email_auth',
+            'initial_redirect' => '/access',
             'pre_auth_success_redirect' => '/waiting',
             'pre_auth_failure_redirect' => '/#partial_failure',
             'success_redirect' => '/',
@@ -95,7 +96,8 @@ class EmailAuthenticationFactoryTest extends TestCase
         // check entry point definition
         $definition = $container->getDefinition('security.authentication.rockz_email_auth_entry_point.foo');
         $this->assertEquals(array(
-            '$httpUtils' => new Reference('security.http_utils')
+            '$httpUtils' => new Reference('security.http_utils'),
+            '$redirectPath' => '/access',
         ), $definition->getArguments());
     }
 
@@ -181,6 +183,7 @@ class EmailAuthenticationFactoryTest extends TestCase
         $options = array(
             'remember_me' => true,
             'email_parameter' => 'email_auth',
+            'initial_redirect' => '/access',
             'pre_auth_success_redirect' => '/please-wait-right-here',
             'pre_auth_failure_redirect' => '/something-went-wrong',
             'success_redirect' => '/woop-woop',
@@ -225,6 +228,7 @@ class EmailAuthenticationFactoryTest extends TestCase
             array(
                 'remember_me' => true,
                 'email_parameter' => 'email_auth',
+                'initial_redirect' => '/access',
                 'pre_auth_success_redirect' => '/waiting',
                 'pre_auth_failure_redirect' => '/#partial_failure',
                 'success_redirect' => '/',
@@ -236,6 +240,7 @@ class EmailAuthenticationFactoryTest extends TestCase
         $tests[] = array(
             array(
                 'email_parameter' => 'blub',
+                'initial_redirect' => '/foo',
                 'pre_auth_success_handler' => 'foo',
                 'pre_auth_failure_handler' => 'bar',
                 'success_handler' => 'baz',
@@ -248,6 +253,7 @@ class EmailAuthenticationFactoryTest extends TestCase
             array(
                 'remember_me' => true,
                 'email_parameter' => 'blub',
+                'initial_redirect' => '/foo',
                 'pre_auth_success_handler' => 'foo',
                 'pre_auth_failure_handler' => 'bar',
                 'success_handler' => 'baz',

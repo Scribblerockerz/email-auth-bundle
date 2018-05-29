@@ -46,6 +46,7 @@ class EmailAuthenticationFactoryTest extends TestCase
         $this->assertEquals(array(
             '$userProvider' => new Reference('user_provider'),
             '$providerKey' => 'foo',
+            '$remoteAuthorizer' => new Reference('rockz_email_auth.remote_authorization.remote_authorizer.foo'),
         ), $definition->getArguments());
 
 

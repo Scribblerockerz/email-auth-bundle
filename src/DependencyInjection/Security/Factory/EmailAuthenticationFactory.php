@@ -28,7 +28,8 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
      */
     public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPointId)
     {
-        $providerId = $this->createAuthenticationProvider($container, $id, $config, $userProviderId);
+        $remoteAuthorizerId = $this->createRemoteAuthorizationService($container, $id, $config);
+        $providerId = $this->createAuthenticationProvider($container, $id, $config, $userProviderId, $remoteAuthorizerId);
         $listenerId = $this->createAuthenticationListener($container, $id, $config);
         $entryPointId = $this->createEntryPoint($container, $id, $config);
 
@@ -39,7 +40,6 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                 ->addTag('security.remember_me_aware', array('id' => $id, 'provider' => $userProviderId))
             ;
         }
-
         return array($providerId, $listenerId, $entryPointId);
     }
 
@@ -49,12 +49,7 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
      * @param array $config
      * @return string
      */
-    protected function createAuthenticationProvider(
-        ContainerBuilder $container,
-        string $firewallName,
-        array $config,
-        $userProviderId
-    ) {
+    protected function createAuthenticationProvider(ContainerBuilder $container, string $firewallName, array $config, $userProviderId, $remoteAuthorizerId) {
         $providerId = 'security.authentication.rockz_email_auth_provider.'.$firewallName;
         $container
             ->setDefinition(
@@ -62,7 +57,9 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                 new ChildDefinition('rockz_email_auth.security_authentication_provider.email_authentication_provider')
             )
             ->setArgument('$userProvider', new Reference($userProviderId))
-            ->setArgument('$providerKey', $firewallName);
+            ->setArgument('$providerKey', $firewallName)
+            ->setArgument('$remoteAuthorizer', new Reference($remoteAuthorizerId))
+        ;
 
         return $providerId;
     }
@@ -215,6 +212,39 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
     }
 
     /**
+     * @param ContainerBuilder $container
+     * @param string $firewallName
+     * @param array $config
+     * @return string
+     */
+    protected function createRemoteAuthorizationService(ContainerBuilder $container, string $firewallName, array $config)
+    {
+        $authorizationMailerId = 'rockz_email_auth.mailer.authorization_mailer.'.$firewallName;
+        $authorizationMailer = $container
+            ->setDefinition(
+                $authorizationMailerId,
+                new ChildDefinition('rockz_email_auth.mailer.authorization_mailer')
+            );
+
+        // apply firewall instance configuration
+        if (isset($config['remote_authorization'])) {
+            $authorizationMailer->replaceArgument('$options', $config['remote_authorization']);
+        }
+
+        $remoteAuthorizerId = 'rockz_email_auth.remote_authorization.remote_authorizer.'.$firewallName;
+        $container
+            ->setDefinition(
+                $remoteAuthorizerId,
+                new ChildDefinition('rockz_email_auth.remote_authorization.remote_authorizer')
+            )
+            ->setPublic(true)
+            ->replaceArgument('$mailer', new Reference($authorizationMailerId))
+        ;
+
+        return $remoteAuthorizerId;
+    }
+
+    /**
      * Subclasses may disable remember-me features for the listener, by
      * always returning false from this method.
      *
@@ -279,6 +309,15 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                 ->end()
                 ->scalarNode('failure_redirect')
                     ->defaultValue('/#total_failure')
+                ->end()
+                ->arrayNode('remote_authorization')
+                    ->children()
+                        ->scalarNode('authorize_route')->defaultValue('rockz_email_auth_authorization_authorize')->end()
+                        ->scalarNode('refuse_route')->defaultValue('rockz_email_auth_authorization_refuse')->end()
+                        ->scalarNode('from_email')->defaultValue('changeme@example.com')->end()
+                        ->scalarNode('template_email_authorize_login')->defaultValue('emails/authorization/login.html.twig')->end()
+                    ->end()
+                    ->end()
                 ->end()
             ->end();
     }

@@ -55,11 +55,12 @@
         <service id="rockz_email_auth.mailer.authorization_mailer" class="Rockz\EmailAuthBundle\Mailer\AuthorizationMailer">
             <argument type="service" id="rockz_email_auth.mailer.twig_swift_mailer"/>
             <argument type="service" id="router.default"/>
+            <argument key="$options" type="collection"/>
         </service>
 
-        <service id="rockz_email_auth.remote_authorization.remote_authorizer" class="Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer">
-            <argument type="service" id="rockz_email_auth.repository.auth_session_repository"/>
-            <argument type="service" id="rockz_email_auth.mailer.authorization_mailer"/>
+        <service id="rockz_email_auth.remote_authorization.remote_authorizer" class="Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer" public="true">
+            <argument key="$authSessionRepository" type="service" id="rockz_email_auth.repository.auth_session_repository"/>
+            <argument key="$mailer" type="service" id="rockz_email_auth.mailer.authorization_mailer"/>
         </service>
 
 

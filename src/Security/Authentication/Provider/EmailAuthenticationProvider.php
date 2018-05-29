@@ -35,9 +35,6 @@ class EmailAuthenticationProvider implements AuthenticationProviderInterface
      * @return TokenInterface An authenticated TokenInterface instance, never null
      *
      * @throws \Throwable
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function authenticate(TokenInterface $token)
     {

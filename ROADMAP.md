@@ -6,7 +6,6 @@ This is more of a todo for this project.
     - Declare public services
     - Add aliases for auto-wiring
 - Allow bundle configuration
-- Add firewall based configuration of the mailer
 - Add CSRF protection support
 - Prevent users from sending too many requests
 - Add registration workflow `#documentation`

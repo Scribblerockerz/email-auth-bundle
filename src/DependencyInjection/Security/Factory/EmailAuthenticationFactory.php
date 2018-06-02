@@ -319,7 +319,7 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                         ->scalarNode('authorize_route')->defaultValue('rockz_email_auth_authorization_authorize')->end()
                         ->scalarNode('refuse_route')->defaultValue('rockz_email_auth_authorization_refuse')->end()
                         ->scalarNode('from_email')->defaultValue('changeme@example.com')->end()
-                        ->scalarNode('template_email_authorize_login')->defaultValue('emails/authorization/login.html.twig')->end()
+                        ->scalarNode('template_email_authorize_login')->defaultValue('@RockzEmailAuth/emails/authorization/login.html.twig')->end()
                     ->end()
                 ->end()
                 ->booleanNode('csrf_protection')

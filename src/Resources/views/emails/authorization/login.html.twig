@@ -1,0 +1,26 @@
+{% block subject %}New authentication request{% endblock %}
+
+{% block body_html %}
+    <h3>Login authorization</h3>
+    <p>You requested access to your account?</p>
+
+    <p>
+        <a href="{{ authorizeUrl }}"><strong>Yes</strong>, let me in!</a>
+        <hr>
+        <a href="{{ refuseUrl }}"><strong>NO</strong>, I did NOT requested this login attempt!</a>
+    </p>
+{% endblock %}
+
+{% block body_text %}
+You requested access to your account?
+
+
+YES let me in:
+{{ authorizeUrl }}
+
+---------------------------------
+
+NO. I did NOT requested this login attempt:
+{{ refuseUrl }}
+
+{% endblock %}

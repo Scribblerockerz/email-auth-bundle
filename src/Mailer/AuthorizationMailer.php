@@ -23,7 +23,7 @@ class AuthorizationMailer
         'authorize_route' => 'rockz_email_auth_authorization_authorize',
         'refuse_route' => 'rockz_email_auth_authorization_refuse',
         'from_email' => 'changeme@example.com',
-        'template_email_authorize_login' => 'emails/authorization/login.html.twig'
+        'template_email_authorize_login' => '@RockzEmailAuth/emails/authorization/login.html.twig'
     );
 
     /**

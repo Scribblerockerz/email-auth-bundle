@@ -3,9 +3,6 @@
 This is more of a todo for this project.
 
 - Prevent users from sending too many requests
-- Cleanup services.xml
-    - Declare public services
-    - Add aliases for auto-wiring
 - Allow bundle configuration
     - find components which need configuration...
 - Add registration workflow `#documentation`

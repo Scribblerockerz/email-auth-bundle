@@ -32,27 +32,27 @@
             <argument key="$remoteAuthorizer" type="service" id="rockz_email_auth.remote_authorization.remote_authorizer"/>
         </service>
 
-        <service id="rockz_email_auth.security_http_authentication.email_authentication_success_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationSuccessHandler">
+        <service id="rockz_email_auth.security_http_authentication.email_authentication_success_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationSuccessHandler" public="false">
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router.default"/>
             <argument key="$redirectPath"/>
         </service>
-        <service id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationFailureHandler">
+        <service id="rockz_email_auth.security_http_authentication.email_authentication_failure_handler" class="Rockz\EmailAuthBundle\Security\Http\Authentication\EmailAuthenticationFailureHandler" public="false">
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router.default"/>
             <argument key="$redirectPath"/>
         </service>
 
-        <service id="rockz_email_auth.repository.auth_session_repository" class="Rockz\EmailAuthBundle\Repository\AuthSessionRepository">
+        <service id="rockz_email_auth.repository.auth_session_repository" class="Rockz\EmailAuthBundle\Repository\AuthSessionRepository" public="false">
             <argument type="service" id="doctrine"/>
         </service>
 
-        <service id="rockz_email_auth.mailer.twig_swift_mailer" class="Rockz\EmailAuthBundle\Mailer\TwigSwiftMailer">
+        <service id="rockz_email_auth.mailer.twig_swift_mailer" class="Rockz\EmailAuthBundle\Mailer\TwigSwiftMailer" public="false">
             <argument type="service" id="mailer"/>
             <argument type="service" id="twig"/>
         </service>
 
-        <service id="rockz_email_auth.mailer.authorization_mailer" class="Rockz\EmailAuthBundle\Mailer\AuthorizationMailer">
+        <service id="rockz_email_auth.mailer.authorization_mailer" class="Rockz\EmailAuthBundle\Mailer\AuthorizationMailer" public="false">
             <argument type="service" id="rockz_email_auth.mailer.twig_swift_mailer"/>
             <argument type="service" id="router.default"/>
             <argument key="$options" type="collection"/>
@@ -64,15 +64,9 @@
         </service>
 
 
-
-        <!-- TODO: figure out which services can be auto-wired and be used standalone -->
-
-        <!-- aliases -->
+        <!-- aliases: fixing auto-wiring -->
         <service id="Rockz\EmailAuthBundle\Repository\AuthSessionRepository" alias="rockz_email_auth.repository.auth_session_repository" public="true"/>
         <service id="Rockz\EmailAuthBundle\RemoteAuthorization\RemoteAuthorizer" alias="rockz_email_auth.remote_authorization.remote_authorizer" public="true"/>
-
-        <!--<service id="Rockz\EmailAuthBundle\Security\Http\EntryPoint\EmailAuthenticationEntryPoint" alias="rockz_email_auth.security_http_entry_point.email_authentication_entry_point"/>-->
-        <!--<service id="Rockz\EmailAuthBundle\Security\Firewall\EmailAuthenticationListener" alias="rockz_email_auth.security_firewall.email_authentication_listener"/>-->
 
     </services>
 </container>

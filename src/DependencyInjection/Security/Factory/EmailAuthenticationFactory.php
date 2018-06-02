@@ -81,7 +81,11 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
         $listener->replaceArgument('$preAuthenticationFailureHandler', new Reference($this->createPreAuthenticationFailureHandler($container, $firewallName, $config)));
         $listener->replaceArgument('$authenticationSuccessHandler', new Reference($this->createSuccessHandler($container, $firewallName, $config)));
         $listener->replaceArgument('$authenticationFailureHandler', new Reference($this->createFailureHandler($container, $firewallName, $config)));
+        $listener->replaceArgument('$options', $config);
 
+        if ($config['csrf_protection']) {
+            $listener->replaceArgument('$csrfTokenManager', new Reference('security.csrf.token_manager'));
+        }
 
         $container->setDefinition($listenerId, $listener);
         return $listenerId;
@@ -317,8 +321,12 @@ class EmailAuthenticationFactory implements SecurityFactoryInterface
                         ->scalarNode('from_email')->defaultValue('changeme@example.com')->end()
                         ->scalarNode('template_email_authorize_login')->defaultValue('emails/authorization/login.html.twig')->end()
                     ->end()
-                    ->end()
                 ->end()
+                ->booleanNode('csrf_protection')
+                    ->defaultValue(false)
+                ->end()
+                ->scalarNode('csrf_token_id')->defaultValue('rockz_email_auth_authenticate')->end()
+                ->scalarNode('csrf_parameter')->defaultValue('_csrf_token')->end()
             ->end();
     }
 }

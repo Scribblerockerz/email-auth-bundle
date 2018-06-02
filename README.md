@@ -58,3 +58,28 @@ bin/console doctrine:schema:update --force # don't do this in production
 bin/console doctrine:migrations:diff
 bin/console doctrine:migrations:migrate 
 ```  
+
+
+### 5. CSRF Protection (optional)
+You can enable csrf protection for your login form.
+
+Enable the `csrf_protection` under your firewall settings for `rockz_email_auth`.
+```yaml
+# /config/packages/security.yaml
+security:
+  firewalls:
+    main:
+      rockz_email_auth:
+        csrf_protection: true
+```
+
+Add the following part to your login form:
+```html
+<input type="hidden" name="_csrf_token" value="{{ csrf_token('rockz_email_auth_authenticate') }}">
+```
+
+If you haven't required `symfony/form` you may do this by running
+```
+composer require symfony/form
+```
+It contains twig's `csrf_token` helper method.

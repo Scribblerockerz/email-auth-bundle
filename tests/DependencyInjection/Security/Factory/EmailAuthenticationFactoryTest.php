@@ -12,9 +12,8 @@ class EmailAuthenticationFactoryTest extends TestCase
 {
     public function testCreate()
     {
-        list($container, $authProviderId, $listenerId, $entryPointId) = $this->callFactory('foo', array(
+        $config = array(
 //            'use_forward' => true,
-//            'failure_path' => '/foo',
             'remember_me' => true,
             'email_parameter' => 'email_auth',
             'initial_redirect' => '/access',
@@ -22,7 +21,10 @@ class EmailAuthenticationFactoryTest extends TestCase
             'pre_auth_failure_redirect' => '/#partial_failure',
             'success_redirect' => '/',
             'failure_redirect' => '/#total_failure',
-        ), 'user_provider', 'entry_point');
+            'csrf_protection' => false,
+        );
+
+        list($container, $authProviderId, $listenerId, $entryPointId) = $this->callFactory('foo', $config, 'user_provider', 'entry_point');
 
 
 
@@ -75,6 +77,7 @@ class EmailAuthenticationFactoryTest extends TestCase
             '$preAuthenticationFailureHandler' => new Reference('rockz_email_auth.security_http_authentication.email_authentication_pre_auth_failure_handler.foo'),
             '$authenticationSuccessHandler' => new Reference('rockz_email_auth.security_http_authentication.email_authentication_success_handler.foo'),
             '$authenticationFailureHandler' => new Reference('rockz_email_auth.security_http_authentication.email_authentication_failure_handler.foo'),
+            '$options' => $config,
         ), $definition->getArguments());
 
 
@@ -189,6 +192,7 @@ class EmailAuthenticationFactoryTest extends TestCase
             'pre_auth_failure_redirect' => '/something-went-wrong',
             'success_redirect' => '/woop-woop',
             'failure_redirect' => '/damn',
+            'csrf_protection' => false,
         );
 
         if ($handlerServiceId) {
@@ -234,6 +238,9 @@ class EmailAuthenticationFactoryTest extends TestCase
                 'pre_auth_failure_redirect' => '/#partial_failure',
                 'success_redirect' => '/',
                 'failure_redirect' => '/#total_failure',
+                'csrf_protection' => false,
+                'csrf_token_id' => 'rockz_email_auth_authenticate',
+                'csrf_parameter' => '_csrf_token',
             ),
         );
 
@@ -250,6 +257,9 @@ class EmailAuthenticationFactoryTest extends TestCase
                 'pre_auth_failure_redirect' => '/something-went-wrong',
                 'success_redirect' => '/woop-woop',
                 'failure_redirect' => '/damn',
+                'csrf_protection' => true,
+                'csrf_token_id' => 'authenticate',
+                'csrf_parameter' => 'token',
             ),
             array(
                 'remember_me' => true,
@@ -263,6 +273,9 @@ class EmailAuthenticationFactoryTest extends TestCase
                 'pre_auth_failure_redirect' => '/something-went-wrong',
                 'success_redirect' => '/woop-woop',
                 'failure_redirect' => '/damn',
+                'csrf_protection' => true,
+                'csrf_token_id' => 'authenticate',
+                'csrf_parameter' => 'token',
             ),
         );
 

@@ -16,7 +16,11 @@ use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
+use Symfony\Component\Security\Http\ParameterBagUtils;
 use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
 
 class EmailAuthenticationListener implements ListenerInterface
@@ -33,6 +37,11 @@ class EmailAuthenticationListener implements ListenerInterface
     /** @var RememberMeServicesInterface */
     protected $rememberMeServices;
 
+    /** @var CsrfTokenManagerInterface */
+    protected $csrfTokenManager;
+
+    protected $options = array();
+
     public function __construct(
         TokenStorageInterface $tokenStorage,
         AuthenticationManagerInterface $authenticationManager,
@@ -41,7 +50,9 @@ class EmailAuthenticationListener implements ListenerInterface
         PreAuthenticationSuccessHandlerInterface $preAuthenticationSuccessHandler,
         PreAuthenticationFailureHandlerInterface $preAuthenticationFailureHandler,
         AuthenticationSuccessHandlerInterface $authenticationSuccessHandler,
-        AuthenticationFailureHandlerInterface $authenticationFailureHandler
+        AuthenticationFailureHandlerInterface $authenticationFailureHandler,
+        array $options = array(),
+        CsrfTokenManagerInterface $csrfTokenManager = null
     )
     {
         $this->tokenStorage = $tokenStorage;
@@ -52,6 +63,8 @@ class EmailAuthenticationListener implements ListenerInterface
         $this->preAuthenticationFailureHandler = $preAuthenticationFailureHandler;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
         $this->authenticationFailureHandler = $authenticationFailureHandler;
+        $this->options = $options;
+        $this->csrfTokenManager = $csrfTokenManager;
     }
 
     /**
@@ -73,6 +86,15 @@ class EmailAuthenticationListener implements ListenerInterface
             $email = $request->request->get($this->emailParameter);
 
             $response = null;
+
+            // optional csrf protection
+            if (null !== $this->csrfTokenManager) {
+                $csrfToken = ParameterBagUtils::getRequestParameterValue($request, $this->options['csrf_parameter']);
+
+                if (false === $this->csrfTokenManager->isTokenValid(new CsrfToken($this->options['csrf_token_id'], $csrfToken))) {
+                    throw new InvalidCsrfTokenException('Invalid CSRF token.');
+                }
+            }
 
             try {
                 // requesting the authorization for that authentication

@@ -2,7 +2,6 @@
 
 This is more of a todo for this project.
 
-- Add CSRF protection support
 - Prevent users from sending too many requests
 - Cleanup services.xml
     - Declare public services

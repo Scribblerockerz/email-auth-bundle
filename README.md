@@ -1,4 +1,4 @@
-# Using EmailAuthBundle
+# The EmailAuthBundle
 This bundle provides a way to authenticate a user by email only.
 An authorization request is sent to an email to ask the user if the requested authentication is intended/correct.
 With a click in that email, the authentication attempt can be accepted or canceled. 
@@ -17,7 +17,7 @@ composer require rockz/email-auth-bundle
 
 ### 2. Configuration
 
-Configure the firewall:
+Configure the firewall by adding the `rockz_email_auth` key to it. Provide a user provider which should be used for the authentication procedure.
 ```yaml
 # /config/packages/security.yaml
 security:
@@ -26,7 +26,7 @@ security:
       rockz_email_auth: ~
 ```
 
-Import bundle specific routes:
+Import bundle specific routes.
 ```yaml
 # /config/routes/rockz_email_auth.yaml
 _some_routing_key:
@@ -35,7 +35,7 @@ _some_routing_key:
 
 ### 3. Prepare your template
 
-Insert this form somewhere on your page:
+Insert this form somewhere on your page.
 ```html
 <form action="" method="post">
     <fieldset>
@@ -46,6 +46,7 @@ Insert this form somewhere on your page:
     <button>submit</button>
 </form>
 ```
+The request must be a post, with the provided `email_auth` parameter containing the users email. 
 
 ### 4. Update your database
 

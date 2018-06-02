@@ -59,8 +59,13 @@ bin/console doctrine:migrations:diff
 bin/console doctrine:migrations:migrate 
 ```  
 
+### 5. Configure your SwiftMailer
 
-### 5. CSRF Protection (optional)
+This bundle uses the SwiftMailer to send emails to the user which is provided by the configured user provider.
+
+Documentation: [SwiftMailer configuration](https://symfony.com/doc/current/reference/configuration/swiftmailer.html) 
+
+### 6. CSRF Protection (optional)
 You can enable csrf protection for your login form.
 
 Enable the `csrf_protection` under your firewall settings for `rockz_email_auth`.
@@ -83,3 +88,61 @@ If you haven't required `symfony/form` you may do this by running
 composer require symfony/form
 ```
 It contains twig's `csrf_token` helper method.
+
+
+## Example Setup
+
+The following part should explain how this bundle is supposed to be used.
+
+TBD.
+
+The following firewall configuration is going to enable:
+- authentication by email
+- support logout
+- add a restricted area
+
+
+```yaml
+# /config/packages/security.yaml
+security:
+    providers:
+        in_memory_members:
+            memory:
+                users:
+                    john@example.com:
+                        roles: ROLE_USER
+                    emely@example.com:
+                        roles: ROLE_USER
+    firewalls:
+        # custom firewall for the email authentication
+        premium_firewall:
+            # your user provider goes here (can be anything that provides a user)
+            provider: in_memory_members
+            
+            # actual bundle specific configuration
+            rockz_email_auth:
+                remote_authorization:
+                    from_email: "john.fox@example.com"
+            
+            # support to logout
+            logout:
+                path:   /logout
+                target: /
+            
+            # allow anonymous users reach the any routes
+            anonymous: ~
+        #...
+    access_control:
+        - { path: ^/premium, roles: ROLE_USER }
+        - { path: ^/account, roles: ROLE_USER }
+```
+
+Import routes for the authorization controller. Create that file (btw. you can name it how ever you want).
+```yaml
+# /config/routes/rockz_email_auth.yaml
+_some_routing_key:
+  resource: "@RockzEmailAuthBundle/Resources/config/routes.xml"
+  
+logout:
+    path: /logout
+```

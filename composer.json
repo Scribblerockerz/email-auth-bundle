@@ -23,11 +23,11 @@
         }
     },
     "require": {
-        "symfony/security": "^4.0@dev || ^4.1@dev",
+        "symfony/security": "^4.0",
         "symfony/orm-pack": "^1.0",
-        "symfony/security-bundle": "^2.7 || ^3.0 || ^4.0",
-        "symfony/twig-bundle": "^2.7 || ^3.0",
-        "symfony/swiftmailer-bundle": "^3.2@dev"
+        "symfony/security-bundle": ">=2.7",
+        "symfony/twig-bundle": ">=2.7",
+        "symfony/swiftmailer-bundle": "^3.2"
     },
     "minimum-stability": "dev",
     "require-dev": {

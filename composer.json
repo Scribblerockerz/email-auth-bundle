@@ -2,6 +2,7 @@
     "name": "rockz/email-auth-bundle",
     "description": "Authenticate the user by sending an authorization request to his email.",
     "type": "symfony-bundle",
+    "license": "MIT",
     "authors": [
         {
             "name": "Johannes Schröder",

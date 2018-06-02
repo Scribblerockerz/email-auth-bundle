@@ -35,15 +35,10 @@ _some_routing_key:
 
 ### 3. Prepare your template
 
-Insert this form somewhere on your page.
+Insert this minimum form somewhere on your page.
 ```html
 <form action="" method="post">
-    <fieldset>
-        <legend>Authenticate yourself by mail</legend>
-        <label for="email_auth">Email</label>
-        <input type="text" name="email_auth" id="email_auth">
-    </fieldset>
-    <button>submit</button>
+    <input type="text" name="email_auth">
 </form>
 ```
 The request must be a post, with the provided `email_auth` parameter containing the users email. 
@@ -90,18 +85,63 @@ composer require symfony/form
 ```
 It contains twig's `csrf_token` helper method.
 
+## Configuration
+
+Most of the bundle behaviour is configured inside the firewall configuration in the security section.
+```yaml
+# /config/packages/security.yaml
+security:
+    firewalls:
+        main:
+            rockz_email_auth:
+                
+                # Required to remember an authentication between requests
+                remember_me:          true
+                
+                # Service id of handlers
+                pre_auth_success_handler: ~
+                pre_auth_failure_handler: ~
+                success_handler:      ~
+                failure_handler:      ~
+                
+                # input field parameter from the form/request
+                email_parameter:      email_auth
+                
+                # redirect the user to this path/route if the user hits a restricted area
+                initial_redirect:     /access
+                
+                # redirect the user to this path/route after an authorization request is sent
+                pre_auth_success_redirect: /waiting
+                
+                # redirect the user to this path/route after an authorization request was rejected by the system
+                pre_auth_failure_redirect: '/#partial_failure'
+                
+                # redirect the user to this path/route after an authorization request was accepted by the user
+                success_redirect:     /
+                
+                # redirect the user to this path/route after an authorization request was rejected by the system or the user
+                failure_redirect:     '/#total_failure'
+                
+                # bundle's core service for remote authorizations
+                remote_authorization:
+                    authorize_route:      rockz_email_auth_authorization_authorize
+                    refuse_route:         rockz_email_auth_authorization_refuse
+                    from_email:           changeme@example.com
+                    template_email_authorize_login: '@RockzEmailAuth/emails/authorization/login.html.twig'
+                
+                # optional csrf protection, requires symfony/form package
+                csrf_protection:      false
+                csrf_token_id:        rockz_email_auth_authenticate
+                csrf_parameter:       _csrf_token
+
+```
+
 
 ## Example Setup
 
-The following part should explain how this bundle is supposed to be used.
-
 TBD.
 
-The following firewall configuration is going to enable:
-- authentication by email
-- support logout
-- add a restricted area
-
+The following part should explain how this bundle is supposed to be used.
 
 ```yaml
 # /config/packages/security.yaml
@@ -125,12 +165,12 @@ security:
                 remote_authorization:
                     from_email: "john.fox@example.com"
             
-            # support to logout
+            # support logout
             logout:
                 path:   /logout
                 target: /
             
-            # allow anonymous users reach the any routes
+            # allow anonymous users to reach any routes
             anonymous: ~
         #...
     access_control:
@@ -143,7 +183,8 @@ Import routes for the authorization controller. Create that file (btw. you can n
 # /config/routes/rockz_email_auth.yaml
 _some_routing_key:
   resource: "@RockzEmailAuthBundle/Resources/config/routes.xml"
-  
+
+# previously configured logout action needs this path  
 logout:
     path: /logout
 ```

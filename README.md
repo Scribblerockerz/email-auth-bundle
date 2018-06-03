@@ -3,7 +3,7 @@
 This bundle provides a way to authenticate a registered user by email only.
 A magic link is send to the user where this request can be accepted or rejected.
 
-![build status](https://travis-ci.org/Scribblerockerz/email-auth-bundle.svg?branch=master) 
+[![build status](https://travis-ci.org/Scribblerockerz/email-auth-bundle.svg?branch=master)](https://travis-ci.org/Scribblerockerz/email-auth-bundle) 
 
 **Attention:** This bundle is currently not ready for production!
 

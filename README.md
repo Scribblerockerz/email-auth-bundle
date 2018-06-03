@@ -1,7 +1,9 @@
 # The EmailAuthBundle
-This bundle provides a way to authenticate a user by email only.
-An authorization request is sent to an email to ask the user if the requested authentication is intended/correct.
-With a click in that email, the authentication attempt can be accepted or canceled. 
+
+This bundle provides a way to authenticate a registered user by email only.
+A magic link is send to the user where this request can be accepted or rejected.
+
+![build status](https://travis-ci.org/Scribblerockerz/email-auth-bundle.svg?branch=master) 
 
 **Attention:** This bundle is currently not ready for production!
 

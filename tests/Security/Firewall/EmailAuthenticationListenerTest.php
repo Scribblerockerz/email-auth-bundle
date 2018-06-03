@@ -71,12 +71,6 @@ class EmailAuthenticationListenerTest extends TestCase
         );
     }
 
-    public function testSetRememberMeService()
-    {
-        $listener = $this->createListener('foo');
-        $listener->setRememberMeServices($this->createMock(RememberMeServicesInterface::class));
-    }
-
     public function getRequestAuthorizationFromUserData()
     {
         return array(

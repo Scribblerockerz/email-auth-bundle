@@ -20,9 +20,4 @@ class TwigSwiftMailerTest extends TestCase
 
         $this->assertInstanceOf(TwigSwiftMailer::class, $twigSwiftMailer);
     }
-
-    public function testSendMessageWithTemplate()
-    {
-        $this->markAsRisky();
-    }
 }
